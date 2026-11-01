@@ -73,6 +73,9 @@ $('#testNotify').onclick = () => chrome.notifications?.create('test', { type: 'b
 // LM Bar (Mac menu bar app): optional nativeMessaging permission, then one push to confirm.
 const barStatusText = (b) => !b ? t('o_bar_hint') : b.ok ? t('o_bar_ok') : t('o_bar_missing');
 $('#barOn').checked = await chrome.permissions.contains({ permissions: ['nativeMessaging'] });
+// LM Bar package builds require the bridge permission: it connects automatically and cannot be toggled.
+const bundled = (chrome.runtime.getManifest?.().permissions || []).includes('nativeMessaging');
+if (bundled) $('#barOn').disabled = true;
 if ($('#barOn').checked) $('#barHint').textContent = barStatusText((await chrome.storage.local.get('barStatus')).barStatus);
 $('#barOn').onchange = async (e) => {
   if (e.target.checked) {

@@ -22,6 +22,16 @@ export function firefoxManifest(m) {
   return f;
 }
 
+// LM Bar friend package: the extension ships beside the native app, so the bridge permission is
+// required (granted on Load unpacked / temporary load, no options-page toggle). The key, and so the
+// pinned Chrome ID, is unchanged. Public standalone builds keep nativeMessaging optional.
+export function bundledManifest(m) {
+  const b = structuredClone(m);
+  b.permissions = [...new Set([...b.permissions, 'nativeMessaging'])];
+  b.optional_permissions = (b.optional_permissions || []).filter((p) => p !== 'nativeMessaging');
+  return b;
+}
+
 function pack(target, manifest) {
   const dir = `dist/${target}`;
   fs.rmSync(dir, { recursive: true, force: true });
